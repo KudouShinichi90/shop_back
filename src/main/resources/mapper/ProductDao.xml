@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.aishang.shopback.dao.IProductDao">
+    <!--查询数量-->
+    <select id="findProRowCount" parameterType="com.aishang.shopback.util.PageBeanForProduct" resultType="int">
+        select count(pid) from category c right join categorysecond cs on c.cid = cs.cid right join product p on
+        cs.csid=p.csid
+        <where>
+            <if test="pname!=null and pname!=''">
+                and p.pname like concat(concat('%',#{pname}),'%')
+            </if>
+            <if test="cid!=null and cid!=''and cid!=0">
+                and c.cid = #{cid}
+            </if>
+            <if test="csid!=0 and csid!=null and csid!=''">
+                and cs.csid =#{csid}
+            </if>
+        </where>
+    </select>
+
+    <!--查询商品分页-->
+    <select id="findProduct" parameterType="com.aishang.shopback.util.PageBeanForProduct" resultType="Product">
+        select * from category c right join categorysecond cs on c.cid = cs.cid right join product p on cs.csid=p.csid
+        <where>
+            <if test="pname!=null and pname!=''">
+                and p.pname like concat(concat('%',#{pname}),'%')
+            </if>
+            <if test="cid!=0 and cid!=null and cid!=''">
+                and c.cid = #{cid}
+            </if>
+            <if test="csid!=0 and csid!=null and csid!=''">
+                and cs.csid =#{csid}
+            </if>
+        </where>
+        order by p.pdate desc limit #{start}, #{pageSize}
+    </select>
+    <!--查询一级类目-->
+    <select id="findCategory" resultType="Category">
+        select * from category
+    </select>
+    <!--查询2级类目-->
+    <select id="findCategorySecond" resultType="CategorySecond">
+        select * from categorySecond
+    </select>
+    <!--根据cid 查cs-->
+    <select id="findCateSByCid" resultType="CategorySecond" parameterType="int">
+        select * from categorysecond where cid =#{cid}
+    </select>
+    <!--上传商品及图片-->
+    <insert id="addProduct" parameterType="product">
+        insert into product values (default ,#{pname},#{market_price},#{shop_price},#{image},#{pdesc},#{is_hot},#{pdate},#{csid},#{stock})
+    </insert>
+    <!--根据pid 查询商品-->
+    <select id="findProBypid" parameterType="int" resultType="Product">
+        select * from product where pid =#{pid}
+    </select>
+    <!--pid 找 cid-->
+    <select id="findCsByPid" resultType="CategorySecond" parameterType="int">
+        select cs.* from product p join categorysecond cs on p.csid = cs.csid where pid =#{pid}
+    </select>
+    <!--修改商品-->
+    <update id="updateProduct" parameterType="product">
+        update product set pname=#{pname},market_price=#{market_price},shop_price=#{shop_price},image=#{image},pdesc=#{pdesc},is_hot=#{is_hot},pdate=#{pdate},csid=#{csid},stock=#{stock} where pid=#{pid}
+    </update>
+
+    <!--删除商品-->
+    <delete id="deletePro" parameterType="int">
+        delete from product where pid=#{pid}
+    </delete>
+</mapper>

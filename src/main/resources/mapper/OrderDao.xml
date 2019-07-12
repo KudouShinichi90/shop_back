@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 设置为IUserDao接口方法提供sql语句配置 -->
+<mapper namespace="com.aishang.shopback.dao.IOrderDao">
+    <!--查询订单详情-->
+    <resultMap id="OrderByOid" type="orderExt">
+        <id column="oid" property="oid"></id>
+        <result column="total" property="total"></result>
+        <result column="ordertime" property="ordertime"></result>
+        <result column="state" property="state"></result>
+        <result column="name" property="name"></result>
+        <result column="phone" property="phone"></result>
+        <result column="addr" property="addr"></result>
+        <result column="uid" property="uid"></result>
+        <collection property="orderItemExts" ofType="OrderItemExt">
+            <id column="itemid" property="itemid"></id>
+            <result column="count" property="count"></result>
+            <result column="subtotal" property="subtotal"></result>
+            <result column="pid" property="pid"></result>
+            <result column="oid" property="oid"></result>
+            <association property="product" javaType="product">
+                <id column="pid" property="pid"></id>
+                <result column="pname" property="pname"></result>
+                <result column="market_price" property="market_price"></result>
+                <result column="shop_price" property="shop_price"></result>
+                <result column="image" property="image"></result>
+                <result column="pdesc" property="pdesc"></result>
+                <result column="is_hot" property="is_hot"></result>
+                <result column="pdate" property="pdate"></result>
+                <result column="csid" property="csid"></result>
+                <result column="stock" property="stock"></result>
+            </association>
+        </collection>
+    </resultMap>
+    <!--根据uid 查询分页-->
+    <select id="findOrderByState" parameterType="com.aishang.shopback.util.PageBeanForOrder" resultMap="OrderByOid">
+        select * from (SELECT * from orders
+        <where>
+            <if test="state!=-1">
+                state = #{state}
+            </if>
+
+        </where>
+        ORDER BY ordertime DESC LIMIT #{start}, #{pageSize})as o
+        inner join orderitem oi on o.oid =oi.oid inner join product p
+        on oi.pid = p.pid
+    </select>
+    <!--根据state查询数量-->
+    <select id="findOrderCountByState" parameterType="int" resultType="int">
+        select count(oid) from orders
+        <where>
+            <if test="value!=-1">
+                state = #{value}
+            </if>
+
+        </where>
+    </select>
+
+    <!--修改订单状态-->
+    <update id="updateOState" parameterType="Order">
+        update orders set state = #{state} where oid=#{oid}
+    </update>
+    <!--修改addr-->
+    <update id="updateOAddr" parameterType="Order">
+        update orders set addr = #{addr} where oid=#{oid}
+    </update>
+    <!--find  pid-->
+    <select id="findPid" parameterType="int" resultType="OrderItem">
+        select * from  orderitem where pid=#{pid};
+    </select>
+</mapper>
