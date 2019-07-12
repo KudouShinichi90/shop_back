@@ -163,7 +163,7 @@ public class ProductService implements IProductService {
         product.setPdate(dateFormat.format(new Date()));
         Product pro = productDao.findProBypid(product.getPid());
         String oldimg = pro.getImage();
-        String oldpath = "D:/IdeaProjects/shopback/src/main/webapp/" + oldimg;
+        String oldpath = "D:/IdeaProjects/shop_back/src/main/webapp/" + oldimg;
         if (product.getImage() == null) {
             //删除旧图片
             File oldfile = new File(oldpath);
@@ -173,7 +173,7 @@ public class ProductService implements IProductService {
             File nfile = null;
             try {
                 //文件路径+上传文件名
-                File path = new File("D:/IdeaProjects/shopback/src/main/webapp/images");
+                File path = new File("D:/IdeaProjects/shop_back/src/main/webapp/images");
                 File newfile = makefullDirectoryObj(path);
                 String filename = UUID.randomUUID() + file.getOriginalFilename();
                 nfile = new File(newfile, filename);
@@ -202,7 +202,7 @@ public class ProductService implements IProductService {
     public void deletePro(Integer pid) {
         Product proBypid = productDao.findProBypid(pid);
         String oldimg = proBypid.getImage();
-        String oldpath = "D:/IdeaProjects/shopback/src/main/webapp/" + oldimg;
+        String oldpath = "D:/IdeaProjects/shop_back/src/main/webapp/" + oldimg;
         //删除旧图片
         File oldfile = new File(oldpath);
         oldfile.delete();
